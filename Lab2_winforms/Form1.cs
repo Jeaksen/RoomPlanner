@@ -2,26 +2,59 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Data;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+using System.IO;
+using System.Drawing.Drawing2D;
 
 namespace Lab2_winforms
 {
+
     public partial class Form1 : Form
     {
         private Button selectedButton = null;
+        private GraphicsPath drawnWall = null;
+        private BindingList<Data> ls = new BindingList<Data>();
+        private bool redrawFurniture = false;
         public Form1()
         {
             InitializeComponent();
-            newToolStripMenuItem_Click(null, null);
+            ResizeBitmap();
+            bindingSource1.DataSource = ls;
+            //FILE SAVING!!
+   /*         FileStream fs = new FileStream("DataFile.bm", FileMode.Create);
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(fs, ls);
+            fs.Close();*/
+            
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            furnitureList.Items.Clear();
-            Bitmap flag = new Bitmap(splitContainer1.Panel1.Width, splitContainer1.Panel1.Height);
-            Graphics flagGraphics = Graphics.FromImage(flag);
-            flagGraphics.FillRectangle(Brushes.White, 0, 0, flag.Width, flag.Height);
-            pictureBox1.Image = flag;
+            bindingSource1.Clear();
+            ResizeBitmap();
+        }
+
+        private void ResizeBitmap()
+        {
+            Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            Graphics g = Graphics.FromImage(bmp);
+            g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
+            GraphicsPath graphicsPath = new GraphicsPath();
+            graphicsPath = new GraphicsPath(new Point[] { new Point(50, 50), new Point(100, 100), new Point(150,120) },
+                new byte[] { (byte)PathPointType.Line, (byte)PathPointType.Line, (byte)PathPointType.Line });
+            graphicsPath.AddBezier(1, 1, 50, 50, 100, 100, 120, 170);
+            
+            g.DrawPath(Pens.Red, graphicsPath);
+            Matrix mtr = new Matrix();
+            mtr.Translate(50, 50);
+            mtr.Rotate(90);
+            graphicsPath.Transform(mtr);
+            g.DrawPath(Pens.Blue, graphicsPath);
+            pictureBox1.Image = bmp;
+            redrawFurniture = true;
+            pictureBox1.Refresh();
+            g.Dispose();
         }
 
         private void Furniture_Button_Click(object sender, EventArgs e)
@@ -54,26 +87,95 @@ namespace Lab2_winforms
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (selectedButton == null) return;
-            Bitmap bitmap = (Bitmap)selectedButton.Tag;
-            Graphics g = Graphics.FromImage(pictureBox1.Image);
-            Point point = e.Location;
+            //if (selectedButton)
+            AddNewFurniture(e.Location);
+        }
 
-            point.X -= bitmap.Width / 2;
-            point.Y -= bitmap.Height / 2;
-            g.DrawImage(bitmap, point);
+        private void AddNewFurniture(Point location)
+        {
+            Bitmap bitmap = (Bitmap)selectedButton.Tag;
+
+            int size = (int)Math.Ceiling(Math.Sqrt(Math.Pow(bitmap.Width, 2) + Math.Pow(bitmap.Height, 2)));
+
+            Bitmap bmp = new Bitmap(size, size);
+            Graphics gfx = Graphics.FromImage(bmp);
+            Random random = new Random();
+
+            gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+            gfx.RotateTransform(random.Next(0, 360));
+            gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            gfx.DrawImage(bitmap, new Point((size - bitmap.Width) / 2, (size - bitmap.Height) / 2));
+            gfx.Dispose();
+
+            Graphics g = Graphics.FromImage(pictureBox1.Image);
+
+            Point point = location;
+            point.X -= bmp.Width / 2;
+            point.Y -= bmp.Height / 2;
+            g.DrawImage(bmp, point);
+
+            g.Dispose();
 
             if (selectedButton == coffee_button)
-                furnitureList.Items.Add($"Coffe table {e.Location}");
+                ls.Add(new Data(bmp, location, "Coffe table"));
             else if (selectedButton == bed_button)
-                furnitureList.Items.Add($"Double Bed {e.Location}");
+                ls.Add(new Data(bmp, location, "Double bed"));
             else if (selectedButton == sofa_button)
-                furnitureList.Items.Add($"Sofa {e.Location}");
+                ls.Add(new Data(bmp, location, "Sofa"));
             else if (selectedButton == table_button)
-                furnitureList.Items.Add($"Table {e.Location}");
+                ls.Add(new Data(bmp, location, "Table"));
 
 
             ChangeButtonSelection(selectedButton, false);
             pictureBox1.Refresh();
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            if (!redrawFurniture) return;
+            Graphics g = Graphics.FromImage(pictureBox1.Image);
+            foreach (var data in ls)
+            {
+                Point point = data.Point;
+                point.X -= data.Image.Width / 2;
+                point.Y -= data.Image.Height / 2;
+                g.DrawImage(data.Image, point);
+            }
+            redrawFurniture = false;
+        }
+
+        private void panel1_SizeChanged(object sender, EventArgs e)
+        {
+            if (panel1.Height > pictureBox1.Height || panel1.Width > pictureBox1.Width)
+            {
+                pictureBox1.Size = panel1.Size;
+                ResizeBitmap();
+                redrawFurniture = true;
+                pictureBox1.Refresh();
+            }
+        }
+    }
+
+    [Serializable]
+    public class Data
+    {
+        public GraphicsPath GraphicsPath { get; set; }
+        public Image Image { get; set; }
+        public Point Point { get; set; }
+        public string Text { get; set; }
+
+        public Data(Image img, Point pt, string text)
+        {
+            Image = img;
+            Point = pt;
+            Text = text;
+        }
+
+        public override string ToString()
+        {
+            return $"{Text} {Point}";
         }
     }
 }

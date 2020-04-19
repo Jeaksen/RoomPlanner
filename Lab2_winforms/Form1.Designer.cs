@@ -30,7 +30,9 @@ namespace Lab2_winforms
         /// </summary>
         private void InitializeComponent()
         {
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.components = new System.ComponentModel.Container();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.add_furniture_box = new System.Windows.Forms.GroupBox();
@@ -39,48 +41,66 @@ namespace Lab2_winforms
             this.table_button = new System.Windows.Forms.Button();
             this.sofa_button = new System.Windows.Forms.Button();
             this.bed_button = new System.Windows.Forms.Button();
+            this.wall_button = new System.Windows.Forms.Button();
             this.created_furniture_box = new System.Windows.Forms.GroupBox();
             this.furnitureList = new System.Windows.Forms.ListBox();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            this.BlueprintMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pageSetupDialog1 = new System.Windows.Forms.PageSetupDialog();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.add_furniture_box.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.created_furniture_box.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // splitContainer1
+            // splitContainer
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer.Name = "splitContainer";
             // 
-            // splitContainer1.Panel1
+            // splitContainer.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
+            this.splitContainer.Panel1.AutoScroll = true;
+            this.splitContainer.Panel1.Controls.Add(this.panel1);
             // 
-            // splitContainer1.Panel2
+            // splitContainer.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1069, 528);
-            this.splitContainer1.SplitterDistance = 730;
-            this.splitContainer1.TabIndex = 0;
+            this.splitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
+            this.splitContainer.Size = new System.Drawing.Size(1069, 528);
+            this.splitContainer.SplitterDistance = 730;
+            this.splitContainer.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.AutoScroll = true;
+            this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(730, 528);
+            this.panel1.TabIndex = 1;
+            this.panel1.SizeChanged += new System.EventHandler(this.panel1_SizeChanged);
             // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(730, 528);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
             // 
             // tableLayoutPanel1
@@ -116,6 +136,7 @@ namespace Lab2_winforms
             this.flowLayoutPanel1.Controls.Add(this.table_button);
             this.flowLayoutPanel1.Controls.Add(this.sofa_button);
             this.flowLayoutPanel1.Controls.Add(this.bed_button);
+            this.flowLayoutPanel1.Controls.Add(this.wall_button);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -132,7 +153,7 @@ namespace Lab2_winforms
             this.coffee_button.Name = "coffee_button";
             this.coffee_button.Size = new System.Drawing.Size(75, 75);
             this.coffee_button.TabIndex = 0;
-            this.coffee_button.Tag = Resources.coffee_table;
+            this.coffee_button.Tag = global::Lab2_winforms.Properties.Resources.coffee_table;
             this.coffee_button.UseVisualStyleBackColor = false;
             this.coffee_button.Click += new System.EventHandler(this.Furniture_Button_Click);
             // 
@@ -146,7 +167,7 @@ namespace Lab2_winforms
             this.table_button.Name = "table_button";
             this.table_button.Size = new System.Drawing.Size(75, 75);
             this.table_button.TabIndex = 1;
-            this.table_button.Tag = Resources.table;
+            this.table_button.Tag = global::Lab2_winforms.Properties.Resources.table;
             this.table_button.UseVisualStyleBackColor = false;
             this.table_button.Click += new System.EventHandler(this.Furniture_Button_Click);
             // 
@@ -160,7 +181,7 @@ namespace Lab2_winforms
             this.sofa_button.Name = "sofa_button";
             this.sofa_button.Size = new System.Drawing.Size(75, 75);
             this.sofa_button.TabIndex = 2;
-            this.sofa_button.Tag = Resources.sofa;
+            this.sofa_button.Tag = global::Lab2_winforms.Properties.Resources.sofa;
             this.sofa_button.UseVisualStyleBackColor = false;
             this.sofa_button.Click += new System.EventHandler(this.Furniture_Button_Click);
             // 
@@ -174,9 +195,22 @@ namespace Lab2_winforms
             this.bed_button.Name = "bed_button";
             this.bed_button.Size = new System.Drawing.Size(75, 75);
             this.bed_button.TabIndex = 3;
-            this.bed_button.Tag = Resources.double_bed;
+            this.bed_button.Tag = global::Lab2_winforms.Properties.Resources.double_bed;
             this.bed_button.UseVisualStyleBackColor = false;
             this.bed_button.Click += new System.EventHandler(this.Furniture_Button_Click);
+            // 
+            // wall_button
+            // 
+            this.wall_button.BackColor = System.Drawing.Color.White;
+            this.wall_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.wall;
+            this.wall_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.wall_button.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.wall_button.Location = new System.Drawing.Point(84, 84);
+            this.wall_button.Name = "wall_button";
+            this.wall_button.Size = new System.Drawing.Size(75, 75);
+            this.wall_button.TabIndex = 4;
+            this.wall_button.Tag = global::Lab2_winforms.Properties.Resources.wall;
+            this.wall_button.UseVisualStyleBackColor = false;
             // 
             // created_furniture_box
             // 
@@ -191,6 +225,7 @@ namespace Lab2_winforms
             // 
             // furnitureList
             // 
+            this.furnitureList.DataSource = this.bindingSource1;
             this.furnitureList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.furnitureList.FormattingEnabled = true;
             this.furnitureList.Location = new System.Drawing.Point(3, 16);
@@ -201,41 +236,44 @@ namespace Lab2_winforms
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem});
+            this.BlueprintMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1069, 24);
             this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Text = "menuStrip";
             // 
-            // newToolStripMenuItem
+            // BlueprintMenuItem
             // 
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
-            this.newToolStripMenuItem.Text = "New blueprint";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            this.BlueprintMenuItem.Name = "BlueprintMenuItem";
+            this.BlueprintMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.BlueprintMenuItem.Size = new System.Drawing.Size(94, 20);
+            this.BlueprintMenuItem.Text = "New blueprint";
+            this.BlueprintMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1069, 552);
-            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.menuStrip1);
             this.MinimumSize = new System.Drawing.Size(400, 300);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Room planner";
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel1.PerformLayout();
+            this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+            this.splitContainer.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.add_furniture_box.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.created_furniture_box.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -245,19 +283,23 @@ namespace Lab2_winforms
 
         #endregion
 
-        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox add_furniture_box;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox created_furniture_box;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem BlueprintMenuItem;
         private System.Windows.Forms.Button coffee_button;
         private System.Windows.Forms.Button table_button;
         private System.Windows.Forms.Button sofa_button;
         private System.Windows.Forms.Button bed_button;
         private System.Windows.Forms.ListBox furnitureList;
+        private System.Windows.Forms.PageSetupDialog pageSetupDialog1;
+        private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button wall_button;
     }
 }
 
