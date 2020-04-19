@@ -94,7 +94,7 @@ namespace Lab2_winforms
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.pictureBox1.BackColor = System.Drawing.Color.White;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(730, 528);
@@ -102,6 +102,8 @@ namespace Lab2_winforms
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
+            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
             // tableLayoutPanel1
             // 
@@ -211,6 +213,7 @@ namespace Lab2_winforms
             this.wall_button.TabIndex = 4;
             this.wall_button.Tag = global::Lab2_winforms.Properties.Resources.wall;
             this.wall_button.UseVisualStyleBackColor = false;
+            this.wall_button.Click += new System.EventHandler(this.Furniture_Button_Click);
             // 
             // created_furniture_box
             // 
@@ -249,7 +252,7 @@ namespace Lab2_winforms
             this.BlueprintMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
             this.BlueprintMenuItem.Size = new System.Drawing.Size(94, 20);
             this.BlueprintMenuItem.Text = "New blueprint";
-            this.BlueprintMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            this.BlueprintMenuItem.Click += new System.EventHandler(this.newBitmap_Click);
             // 
             // Form1
             // 
