@@ -11,6 +11,7 @@ namespace Lab2_winforms
         public Image Image { get; set; }
         public Point Point { get; set; }
         public string Text { get; set; }
+        public bool IsSelected { get; set; }
 
         public Data(Image img, Point pt, string text)
         {

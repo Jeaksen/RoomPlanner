@@ -235,6 +235,10 @@ namespace Lab2_winforms
             this.furnitureList.Name = "furnitureList";
             this.furnitureList.Size = new System.Drawing.Size(323, 239);
             this.furnitureList.TabIndex = 0;
+            this.furnitureList.SelectedIndexChanged += new System.EventHandler(this.furnitureList_SelectedIndexChanged);
+            // 
+            // bindingSource1
+            // 
             // 
             // menuStrip1
             // 
