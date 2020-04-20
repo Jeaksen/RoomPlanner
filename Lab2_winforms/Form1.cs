@@ -8,6 +8,7 @@ using System.IO;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.Globalization;
 
 namespace Lab2_winforms
 {
@@ -31,11 +32,7 @@ namespace Lab2_winforms
             InitializeComponent();
             RefreshBitmap();
             bindingSource1.DataSource = planElements;
-            //FILE SAVING!!
-            /*         FileStream fs = new FileStream("DataFile.bm", FileMode.Create);
-                     BinaryFormatter formatter = new BinaryFormatter();
-                     formatter.Serialize(fs, ls);
-                     fs.Close();*/
+            //CultureInfo.CurrentUICulture;
         }
 
         private void newBitmap_Click(object sender, EventArgs e)
@@ -191,6 +188,7 @@ namespace Lab2_winforms
             else if (selectedButton == table_button)
                 planElements.Add(new Data(bmp, location, "Table"));
 
+            furnitureList.SelectedIndex = -1;
             pictureBox1.Refresh();
             ChangeButtonSelection(selectedButton, false);
         }
@@ -202,6 +200,7 @@ namespace Lab2_winforms
                 planElements.Add(new Data(location, "Wall"));
                 wallPoints.Add(location);
                 creatingWall = true;
+                furnitureList.SelectedIndex = -1;
             }
             if (liveDrawing)
                 wallPoints.RemoveAt(wallPoints.Count - 1);
@@ -351,11 +350,6 @@ namespace Lab2_winforms
             }
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (selectedIndex != -1 && e.KeyCode == Keys.Delete)
@@ -369,6 +363,87 @@ namespace Lab2_winforms
                 furnitureList.SelectedIndex = selectedIndex = -1;
                 RefreshBitmap();
             }
+        }
+
+        private void Save_Click(object sender, EventArgs e)
+        {
+            Stream stream = null;
+            SaveFileDialog fileDialog = new SaveFileDialog();
+
+            fileDialog.Filter = "Room plans (*.bm)|*.bm";
+            fileDialog.DefaultExt = ".bm";
+            fileDialog.RestoreDirectory = true;
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var parts = fileDialog.FileName.Split('.');
+                if (parts[parts.Length - 1] != "bm")
+                {
+                    MessageBox.Show("Invalid file exstension!", "Saving info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                try
+                {
+                    if ((stream = fileDialog.OpenFile()) != null)
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+
+                        formatter.Serialize(stream, planElements);
+                        MessageBox.Show("File saved!", "Saving info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed to save the file!", "Saving info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    if (stream != null)
+                        stream.Close();
+                }
+                
+            }
+        }
+
+        private void Open_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Room plans (*.bm)|*.bm";
+                var fileDialog = new OpenFileDialog();
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var parts = fileDialog.FileName.Split('.');
+                    if (parts[parts.Length - 1] != "bm")
+                    {
+                        MessageBox.Show("Invalid file exstension!", "Opening info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Stream stream = null;
+                    try
+                    {
+                        stream = openFileDialog.OpenFile();
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        planElements.Clear();
+                        foreach (var item in (BindingList<Data>)formatter.Deserialize(stream))
+                            planElements.Add(item);
+                        MessageBox.Show("File opened!", "Opening info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        RefreshBitmap();
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Failed to open the file!", "Opening info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        if (stream != null)
+                            stream.Close();
+                    }
+                    furnitureList.SelectedIndex = -1;
+                }
+            }
+            
         }
     }
 }

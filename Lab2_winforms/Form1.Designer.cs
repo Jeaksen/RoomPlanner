@@ -31,6 +31,7 @@ namespace Lab2_winforms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -67,45 +68,30 @@ namespace Lab2_winforms
             // 
             // splitContainer
             // 
-            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer.Location = new System.Drawing.Point(0, 30);
-            this.splitContainer.Margin = new System.Windows.Forms.Padding(4);
+            resources.ApplyResources(this.splitContainer, "splitContainer");
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.AutoScroll = true;
+            resources.ApplyResources(this.splitContainer.Panel1, "splitContainer.Panel1");
             this.splitContainer.Panel1.Controls.Add(this.panel1);
             // 
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer.Size = new System.Drawing.Size(1425, 649);
-            this.splitContainer.SplitterDistance = 973;
-            this.splitContainer.SplitterWidth = 5;
-            this.splitContainer.TabIndex = 0;
             // 
             // panel1
             // 
-            this.panel1.AutoScroll = true;
-            this.panel1.AutoSize = true;
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(973, 649);
-            this.panel1.TabIndex = 1;
             this.panel1.SizeChanged += new System.EventHandler(this.panel1_SizeChanged);
             // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.White;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
+            resources.ApplyResources(this.pictureBox1, "pictureBox1");
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(973, 649);
-            this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
@@ -115,59 +101,35 @@ namespace Lab2_winforms
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
             this.tableLayoutPanel1.Controls.Add(this.add_furniture_box, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.created_furniture_box, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(447, 649);
-            this.tableLayoutPanel1.TabIndex = 0;
             // 
             // add_furniture_box
             // 
             this.add_furniture_box.Controls.Add(this.flowLayoutPanel1);
-            this.add_furniture_box.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.add_furniture_box.Location = new System.Drawing.Point(4, 4);
-            this.add_furniture_box.Margin = new System.Windows.Forms.Padding(4);
+            resources.ApplyResources(this.add_furniture_box, "add_furniture_box");
             this.add_furniture_box.Name = "add_furniture_box";
-            this.add_furniture_box.Padding = new System.Windows.Forms.Padding(4);
-            this.add_furniture_box.Size = new System.Drawing.Size(439, 316);
-            this.add_furniture_box.TabIndex = 0;
             this.add_furniture_box.TabStop = false;
-            this.add_furniture_box.Text = "Add furniture";
             // 
             // flowLayoutPanel1
             // 
-            this.flowLayoutPanel1.AutoScroll = true;
+            resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
             this.flowLayoutPanel1.Controls.Add(this.coffee_button);
             this.flowLayoutPanel1.Controls.Add(this.table_button);
             this.flowLayoutPanel1.Controls.Add(this.sofa_button);
             this.flowLayoutPanel1.Controls.Add(this.bed_button);
             this.flowLayoutPanel1.Controls.Add(this.wall_button);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(4, 19);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(431, 293);
-            this.flowLayoutPanel1.TabIndex = 0;
             // 
             // coffee_button
             // 
             this.coffee_button.BackColor = System.Drawing.Color.White;
             this.coffee_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.coffee_table;
-            this.coffee_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            resources.ApplyResources(this.coffee_button, "coffee_button");
             this.coffee_button.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.coffee_button.Location = new System.Drawing.Point(4, 4);
-            this.coffee_button.Margin = new System.Windows.Forms.Padding(4);
             this.coffee_button.Name = "coffee_button";
-            this.coffee_button.Size = new System.Drawing.Size(100, 92);
-            this.coffee_button.TabIndex = 0;
             this.coffee_button.Tag = global::Lab2_winforms.Properties.Resources.coffee_table;
             this.coffee_button.UseVisualStyleBackColor = false;
             this.coffee_button.Click += new System.EventHandler(this.Furniture_Button_Click);
@@ -176,13 +138,9 @@ namespace Lab2_winforms
             // 
             this.table_button.BackColor = System.Drawing.Color.White;
             this.table_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.table;
-            this.table_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            resources.ApplyResources(this.table_button, "table_button");
             this.table_button.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.table_button.Location = new System.Drawing.Point(112, 4);
-            this.table_button.Margin = new System.Windows.Forms.Padding(4);
             this.table_button.Name = "table_button";
-            this.table_button.Size = new System.Drawing.Size(100, 92);
-            this.table_button.TabIndex = 1;
             this.table_button.Tag = global::Lab2_winforms.Properties.Resources.table;
             this.table_button.UseVisualStyleBackColor = false;
             this.table_button.Click += new System.EventHandler(this.Furniture_Button_Click);
@@ -191,13 +149,9 @@ namespace Lab2_winforms
             // 
             this.sofa_button.BackColor = System.Drawing.Color.White;
             this.sofa_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.sofa;
-            this.sofa_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            resources.ApplyResources(this.sofa_button, "sofa_button");
             this.sofa_button.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.sofa_button.Location = new System.Drawing.Point(220, 4);
-            this.sofa_button.Margin = new System.Windows.Forms.Padding(4);
             this.sofa_button.Name = "sofa_button";
-            this.sofa_button.Size = new System.Drawing.Size(100, 92);
-            this.sofa_button.TabIndex = 2;
             this.sofa_button.Tag = global::Lab2_winforms.Properties.Resources.sofa;
             this.sofa_button.UseVisualStyleBackColor = false;
             this.sofa_button.Click += new System.EventHandler(this.Furniture_Button_Click);
@@ -206,13 +160,9 @@ namespace Lab2_winforms
             // 
             this.bed_button.BackColor = System.Drawing.Color.White;
             this.bed_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.double_bed;
-            this.bed_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            resources.ApplyResources(this.bed_button, "bed_button");
             this.bed_button.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.bed_button.Location = new System.Drawing.Point(4, 104);
-            this.bed_button.Margin = new System.Windows.Forms.Padding(4);
             this.bed_button.Name = "bed_button";
-            this.bed_button.Size = new System.Drawing.Size(100, 92);
-            this.bed_button.TabIndex = 3;
             this.bed_button.Tag = global::Lab2_winforms.Properties.Resources.double_bed;
             this.bed_button.UseVisualStyleBackColor = false;
             this.bed_button.Click += new System.EventHandler(this.Furniture_Button_Click);
@@ -221,13 +171,9 @@ namespace Lab2_winforms
             // 
             this.wall_button.BackColor = System.Drawing.Color.White;
             this.wall_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.wall;
-            this.wall_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            resources.ApplyResources(this.wall_button, "wall_button");
             this.wall_button.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.wall_button.Location = new System.Drawing.Point(112, 104);
-            this.wall_button.Margin = new System.Windows.Forms.Padding(4);
             this.wall_button.Name = "wall_button";
-            this.wall_button.Size = new System.Drawing.Size(100, 92);
-            this.wall_button.TabIndex = 4;
             this.wall_button.Tag = global::Lab2_winforms.Properties.Resources.wall;
             this.wall_button.UseVisualStyleBackColor = false;
             this.wall_button.Click += new System.EventHandler(this.Furniture_Button_Click);
@@ -235,27 +181,16 @@ namespace Lab2_winforms
             // created_furniture_box
             // 
             this.created_furniture_box.Controls.Add(this.furnitureList);
-            this.created_furniture_box.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.created_furniture_box.Location = new System.Drawing.Point(4, 328);
-            this.created_furniture_box.Margin = new System.Windows.Forms.Padding(4);
+            resources.ApplyResources(this.created_furniture_box, "created_furniture_box");
             this.created_furniture_box.Name = "created_furniture_box";
-            this.created_furniture_box.Padding = new System.Windows.Forms.Padding(4);
-            this.created_furniture_box.Size = new System.Drawing.Size(439, 317);
-            this.created_furniture_box.TabIndex = 1;
             this.created_furniture_box.TabStop = false;
-            this.created_furniture_box.Text = "Created furniture";
             // 
             // furnitureList
             // 
             this.furnitureList.DataSource = this.bindingSource1;
-            this.furnitureList.Dock = System.Windows.Forms.DockStyle.Fill;
+            resources.ApplyResources(this.furnitureList, "furnitureList");
             this.furnitureList.FormattingEnabled = true;
-            this.furnitureList.ItemHeight = 16;
-            this.furnitureList.Location = new System.Drawing.Point(4, 19);
-            this.furnitureList.Margin = new System.Windows.Forms.Padding(4);
             this.furnitureList.Name = "furnitureList";
-            this.furnitureList.Size = new System.Drawing.Size(431, 294);
-            this.furnitureList.TabIndex = 0;
             this.furnitureList.SelectedIndexChanged += new System.EventHandler(this.furnitureList_SelectedIndexChanged);
             // 
             // menuStrip1
@@ -263,11 +198,8 @@ namespace Lab2_winforms
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BlueprintMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1425, 30);
-            this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip";
             // 
             // BlueprintMenuItem
             // 
@@ -276,45 +208,34 @@ namespace Lab2_winforms
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem});
             this.BlueprintMenuItem.Name = "BlueprintMenuItem";
-            this.BlueprintMenuItem.Size = new System.Drawing.Size(117, 24);
-            this.BlueprintMenuItem.Text = "New blueprint";
-            this.BlueprintMenuItem.Click += new System.EventHandler(this.newBitmap_Click);
+            resources.ApplyResources(this.BlueprintMenuItem, "BlueprintMenuItem");
             // 
             // newBlueprintToolStripMenuItem
             // 
             this.newBlueprintToolStripMenuItem.Name = "newBlueprintToolStripMenuItem";
-            this.newBlueprintToolStripMenuItem.ShortcutKeyDisplayString = "F2";
-            this.newBlueprintToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.newBlueprintToolStripMenuItem.Size = new System.Drawing.Size(210, 26);
-            this.newBlueprintToolStripMenuItem.Text = "New blueprint";
+            resources.ApplyResources(this.newBlueprintToolStripMenuItem, "newBlueprintToolStripMenuItem");
             this.newBlueprintToolStripMenuItem.Click += new System.EventHandler(this.newBitmap_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(210, 26);
-            this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            resources.ApplyResources(this.openToolStripMenuItem, "openToolStripMenuItem");
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.Open_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(210, 26);
-            this.saveToolStripMenuItem.Text = "Save";
+            resources.ApplyResources(this.saveToolStripMenuItem, "saveToolStripMenuItem");
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.Save_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1425, 679);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.MinimumSize = new System.Drawing.Size(527, 358);
             this.Name = "Form1";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Room planner";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();

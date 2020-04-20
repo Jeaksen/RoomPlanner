@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Lab2_winforms
 {
@@ -9,7 +11,11 @@ namespace Lab2_winforms
     {
         private int previousRotation = 0;
         private int rotation = 0;
-        public GraphicsPath GraphicsPath { get; set; }
+        [NonSerialized]
+        private GraphicsPath graphicsPath = null;
+        private PointF[] wallPoints = null;
+        
+        public GraphicsPath GraphicsPath { get => graphicsPath; set => graphicsPath = value; }
         public Image Image { get; set; }
         public Point Point { get; set; }
         public string Text { get; set; }
@@ -42,6 +48,28 @@ namespace Lab2_winforms
         public override string ToString()
         {
             return $"{Text} {Point}";
+        }
+
+        [OnSerializing()]
+        internal void OnSerializingMethod(StreamingContext context)
+        {
+            if (graphicsPath != null)
+                wallPoints = graphicsPath.PathData.Points;
+        }
+
+        [OnDeserialized()]
+        internal void OnDeserializingMethod(StreamingContext context)
+        {
+            if (wallPoints != null)
+            {
+                byte[] pathPointTypes = new byte[wallPoints.Length];
+                for (int i = 0; i < wallPoints.Length; i++)
+                    pathPointTypes[i] = (byte)PathPointType.Line;
+
+                graphicsPath = new GraphicsPath(wallPoints, pathPointTypes);
+                wallPoints = null;
+            }
+            IsSelected = false;
         }
     }
 }
