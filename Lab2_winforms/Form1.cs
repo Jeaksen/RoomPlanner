@@ -56,6 +56,9 @@ namespace Lab2_winforms
         private void Furniture_Button_Click(object sender, EventArgs e)
         {
             ChangeButtonSelection((Button)sender, true);
+            if (selectedIndex >= 0) planElements[selectedIndex].IsSelected = false;
+            furnitureList.SelectedIndex = selectedIndex = -1;
+            RefreshBitmap();
         }
 
         private void ChangeButtonSelection(Button button, bool select)
@@ -171,12 +174,12 @@ namespace Lab2_winforms
             Bitmap bmp = new Bitmap(bitmap.Width, bitmap.Height);
 
             Graphics g = Graphics.FromImage(bmp);
-            DrawFurniture(g, bitmap, new Point(bitmap.Width / 2, bitmap.Height / 2), false, 0f);
+            DrawFurniture(g, bitmap, new Point(bitmap.Width / 2, bitmap.Height / 2));
             g.Dispose();
 
             g = Graphics.FromImage(pictureBox1.Image);
 
-            DrawFurniture(g, bmp, location, false, 0f);
+            DrawFurniture(g, bmp, location);
             g.Dispose();
 
             if (selectedButton == coffee_button)
@@ -234,46 +237,38 @@ namespace Lab2_winforms
                 for (int i = 0; i < pathPointTypes.Length; i++)
                     pathPointTypes[i] = (byte)PathPointType.Line;
 
-                DrawWall(g, new GraphicsPath(wallPoints.ToArray(), pathPointTypes), false, 0f);
+                DrawWall(g, new GraphicsPath(wallPoints.ToArray(), pathPointTypes));
             }
-            
+
             foreach (var data in planElements)
             {
-
-                //printing wall
-                if (data.Image == null)
+                if (data.Image == null) // if the wall is currently created it's graphics path is set to null
                 {
-                    // if the wall is currently created it's graphics path is set to null
-                    if (data.GraphicsPath != null) DrawWall(g, data.GraphicsPath, data.IsSelected, data.RotationDelta);
+                    if (data.GraphicsPath != null) DrawWall(g, data.GraphicsPath, data.IsSelected, data.RotationDelta, data.Point);
                 }
                 else //printing furniture
-                {
                     DrawFurniture(g, data.Image, data.Point, data.IsSelected, data.Rotation);
-                }
             }
         }
 
-        private void DrawWall(Graphics g, GraphicsPath path, bool semitransparent, float rotation)
+        private void DrawWall(Graphics g, GraphicsPath path, bool semitransparent = false, float rotation = 0, Point? location = null)
         {
             Color color = semitransparent ? Color.FromArgb(255 / 2, Color.Black) : Color.Black;
             Pen wallPen = new Pen(color, WALL_WIDTH);
             wallPen.LineJoin = LineJoin.Round;
-            if (rotation != 0)
-            {
-                PathData s = path.PathData;
-                GraphicsPath pth = new GraphicsPath(s.Points, s.Types);
-                Matrix matrix = new Matrix();
+
+            Matrix matrix = new Matrix();
+            if (rotation != 0) 
                 matrix.RotateAt(rotation, path.PathPoints[0]);
-                pth.Transform(matrix);
-                path.Reset();
-                path.AddPath(pth, false);
-            }
+            if (location.HasValue) 
+                matrix.Translate(location.Value.X - path.PathPoints[0].X,location.Value.Y - path.PathPoints[0].Y);
+            path.Transform(matrix);
 
             g.DrawPath(wallPen, path);
             wallPen.Dispose();
         }
 
-        private void DrawFurniture(Graphics g, Image image, Point center, bool semitransparent, float rotation)
+        private void DrawFurniture(Graphics g, Image image, Point center, bool semitransparent = false, float rotation = 0)
         {
             if (rotation != 0)
             {
