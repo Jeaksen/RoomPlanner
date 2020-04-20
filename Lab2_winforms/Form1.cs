@@ -18,8 +18,11 @@ namespace Lab2_winforms
         private List<Point> wallPoints = new List<Point>();
         private BindingList<Data> planElements = new BindingList<Data>();
         private bool creatingWall = false;
+        private bool movingObject = false;
+        private Point? movingAnchor = null;
         private const int WALL_WIDTH = 10;
         private int selectedIndex = -1;
+
 
         private int Distance(Point p1, Point p2) => (int)Math.Sqrt((Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2)));
 
@@ -135,6 +138,8 @@ namespace Lab2_winforms
                 planElements[closestIndex].IsSelected = true;
                 furnitureList.SelectedIndex = closestIndex;
                 selectedIndex = closestIndex;
+                movingObject = true;
+                movingAnchor = new Point(location.X - closestElement.Point.X, location.Y - closestElement.Point.Y);
             } 
             else
                 furnitureList.SelectedIndex = selectedIndex = -1; // If nothing was hit deselect current element and set list's position to default (-1)
@@ -154,41 +159,34 @@ namespace Lab2_winforms
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
+            movingObject = false;
             pictureBox1.Capture = false;
+            movingAnchor = null;
         }
 
         private void AddNewFurniture(Point location)
         {
             Bitmap bitmap = (Bitmap)selectedButton.Tag;
-            /*
-                        int size = (int)Math.Ceiling(Math.Sqrt(Math.Pow(bitmap.Width, 2) + Math.Pow(bitmap.Height, 2)));
 
-                        Bitmap bmp = new Bitmap(size, size);
-                        Graphics gfx = Graphics.FromImage(bmp);
-                        Random random = new Random();
+            Bitmap bmp = new Bitmap(bitmap.Width, bitmap.Height);
 
-                        gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
-                        gfx.RotateTransform(random.Next(0, 360));
-                        gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
-                        gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            Graphics g = Graphics.FromImage(bmp);
+            DrawFurniture(g, bitmap, new Point(bitmap.Width / 2, bitmap.Height / 2), false, 0f);
+            g.Dispose();
 
-                        gfx.DrawImage(bitmap, new Point((size - bitmap.Width) / 2, (size - bitmap.Height) / 2));
-                        gfx.Dispose();
-                        bitmap = bmp;
-                        */
+            g = Graphics.FromImage(pictureBox1.Image);
 
-            Graphics g = Graphics.FromImage(pictureBox1.Image);
-            DrawFurniture(g, bitmap, location, false);
+            DrawFurniture(g, bmp, location, false, 0f);
             g.Dispose();
 
             if (selectedButton == coffee_button)
-                planElements.Add(new Data(bitmap, location, "Coffe table"));
+                planElements.Add(new Data(bmp, location, "Coffe table"));
             else if (selectedButton == bed_button)
-                planElements.Add(new Data(bitmap, location, "Double bed"));
+                planElements.Add(new Data(bmp, location, "Double bed"));
             else if (selectedButton == sofa_button)
-                planElements.Add(new Data(bitmap, location, "Sofa"));
+                planElements.Add(new Data(bmp, location, "Sofa"));
             else if (selectedButton == table_button)
-                planElements.Add(new Data(bitmap, location, "Table"));
+                planElements.Add(new Data(bmp, location, "Table"));
 
             pictureBox1.Refresh();
             ChangeButtonSelection(selectedButton, false);
@@ -236,48 +234,60 @@ namespace Lab2_winforms
                 for (int i = 0; i < pathPointTypes.Length; i++)
                     pathPointTypes[i] = (byte)PathPointType.Line;
 
-                DrawWall(g, new GraphicsPath(wallPoints.ToArray(), pathPointTypes), false);
-                
-/*              Matrix mtr = new Matrix();
-                mtr.Translate(50, 50);
-                mtr.Rotate(90);
-                wall.Transform(mtr);
-                g.DrawPath(Pens.Blue, wall);*/
+                DrawWall(g, new GraphicsPath(wallPoints.ToArray(), pathPointTypes), false, 0f);
             }
             
             foreach (var data in planElements)
             {
+
                 //printing wall
                 if (data.Image == null)
                 {
                     // if the wall is currently created it's graphics path is set to null
-                    if (data.GraphicsPath != null) DrawWall(g, data.GraphicsPath, data.IsSelected);
+                    if (data.GraphicsPath != null) DrawWall(g, data.GraphicsPath, data.IsSelected, data.RotationDelta);
                 }
                 else //printing furniture
                 {
-                    DrawFurniture(g, data.Image, data.Point, data.IsSelected);
+                    DrawFurniture(g, data.Image, data.Point, data.IsSelected, data.Rotation);
                 }
             }
         }
 
-        private void DrawWall(Graphics g, GraphicsPath path, bool semitransparent)
+        private void DrawWall(Graphics g, GraphicsPath path, bool semitransparent, float rotation)
         {
             Color color = semitransparent ? Color.FromArgb(255 / 2, Color.Black) : Color.Black;
             Pen wallPen = new Pen(color, WALL_WIDTH);
             wallPen.LineJoin = LineJoin.Round;
+            if (rotation != 0)
+            {
+                PathData s = path.PathData;
+                GraphicsPath pth = new GraphicsPath(s.Points, s.Types);
+                Matrix matrix = new Matrix();
+                matrix.RotateAt(rotation, path.PathPoints[0]);
+                pth.Transform(matrix);
+                path.Reset();
+                path.AddPath(pth, false);
+            }
 
             g.DrawPath(wallPen, path);
-
             wallPen.Dispose();
         }
 
-        private void DrawFurniture(Graphics g, Image image, Point center, bool semitransparent)
+        private void DrawFurniture(Graphics g, Image image, Point center, bool semitransparent, float rotation)
         {
-            center.X -= image.Width / 2;
-            center.Y -= image.Height / 2;
-            
+            if (rotation != 0)
+            {
+                g.TranslateTransform(center.X, center.Y);
+                g.RotateTransform(rotation);
+                g.TranslateTransform(-center.X, -center.Y);
+                g.InterpolationMode = InterpolationMode.High;
+            }
+            Point draw = center;
+            draw.X -= image.Width / 2;
+            draw.Y -= image.Height / 2;
+
             if (!semitransparent)
-                g.DrawImage(image, center);
+                g.DrawImage(image, draw);
             else
             {
                 float[][] colorMatrixElements = {
@@ -289,16 +299,9 @@ namespace Lab2_winforms
                 ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
                 ImageAttributes imageAttributes = new ImageAttributes();
                 imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-                g.DrawImage(
-                   image,
-                   new Rectangle(center.X, center.Y, image.Width, image.Height),  // destination rectangle 
-                   0, 0,        // upper-left corner of source rectangle 
-                   image.Width,       // width of source rectangle
-                   image.Height,      // height of source rectangle
-                   GraphicsUnit.Pixel,
-                   imageAttributes);
-
+                g.DrawImage(image, new Rectangle(draw.X, draw.Y, image.Width, image.Height), 0, 0, image.Width,  image.Height, GraphicsUnit.Pixel, imageAttributes);
             }
+            g.ResetTransform();
         }
 
         private void panel1_SizeChanged(object sender, EventArgs e)
@@ -309,11 +312,29 @@ namespace Lab2_winforms
                 RefreshBitmap();
             }
         }
+        
+        private void pictureBox1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            HandledMouseEventArgs arg = (HandledMouseEventArgs)e;
+            arg.Handled = true;
+            if (selectedIndex != -1)
+            {
+                planElements[selectedIndex].Rotation += e.Delta / 5;
+                RefreshBitmap();
+            }
+        }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (creatingWall)
                 AddWallPoint(e.Location, true);
+            else if (movingObject)
+            {
+                planElements[selectedIndex].Point = new Point(e.Location.X - movingAnchor.Value.X, e.Location.Y - movingAnchor.Value.Y);
+                planElements.ResetItem(selectedIndex);
+                RefreshBitmap();
+            }
+
         }
 
         private void furnitureList_SelectedIndexChanged(object sender, EventArgs e)
