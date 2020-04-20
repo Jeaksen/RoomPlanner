@@ -217,12 +217,19 @@ namespace Lab2_winforms
             if (planElements[indexLast].Image != null) throw new Exception("Last element of objects list is not an wall element");
             if (planElements[indexLast].GraphicsPath != null) throw new Exception("Last element of objects list already has a GraphicsPath");
             // Last point is the temporary one used for drawing
-            wallPoints.RemoveAt(wallPoints.Count - 1);
-            byte[] pathPointTypes = new byte[wallPoints.Count];
-            for (int i = 0; i < pathPointTypes.Length; i++)
-                pathPointTypes[i] = (byte)PathPointType.Line;
+            if (wallPoints.Count > 2)
+            {
+                wallPoints.RemoveAt(wallPoints.Count - 1);
+                byte[] pathPointTypes = new byte[wallPoints.Count];
+                for (int i = 0; i < pathPointTypes.Length; i++)
+                    pathPointTypes[i] = (byte)PathPointType.Line;
 
-            planElements[indexLast].GraphicsPath = new GraphicsPath(wallPoints.ToArray(), pathPointTypes);
+                planElements[indexLast].GraphicsPath = new GraphicsPath(wallPoints.ToArray(), pathPointTypes);
+            }
+            else
+            {
+                planElements.RemoveAt(planElements.Count - 1);
+            }
             wallPoints.Clear();
             creatingWall = false;
             RefreshBitmap();
@@ -340,6 +347,26 @@ namespace Lab2_winforms
             {
                 planElements[furnitureList.SelectedIndex].IsSelected = true;
                 selectedIndex = furnitureList.SelectedIndex;
+                RefreshBitmap();
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (selectedIndex != -1 && e.KeyCode == Keys.Delete)
+            {
+                planElements.RemoveAt(selectedIndex);
+                selectedIndex = -1;
+                movingAnchor = null;
+                movingObject = false;
+                creatingWall = false;
+                wallPoints.Clear();
+                furnitureList.SelectedIndex = selectedIndex = -1;
                 RefreshBitmap();
             }
         }
