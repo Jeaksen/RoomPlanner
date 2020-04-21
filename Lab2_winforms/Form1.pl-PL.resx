@@ -117,6 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="newBlueprintToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 22</value>
+  </data>
+  <data name="openToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 22</value>
+  </data>
+  <data name="saveToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 22</value>
+  </data>
+  <data name="saveToolStripMenuItem.Text" xml:space="preserve">
+    <value>Zapisz</value>
+  </data>
+  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 22</value>
+  </data>
+  <data name="FileMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>38, 20</value>
+  </data>
   <data name="add_furniture_box.Text" xml:space="preserve">
     <value>Dodaj elementy</value>
   </data>
@@ -129,10 +148,6 @@
   <data name="openToolStripMenuItem.Text" xml:space="preserve">
     <value>Otwórz</value>
   </data>
-  <data name="saveToolStripMenuItem.Text" xml:space="preserve">
-    <value>Zapisz</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="englishToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>224, 26</value>
   </data>
@@ -165,5 +180,26 @@
   </data>
   <data name="wall" xml:space="preserve">
     <value>Ściana</value>
+  </data>
+  <data name="file_dialog_extenstion_error" xml:space="preserve">
+    <value>Nieprawidłowe rozszerzenie pliku!</value>
+  </data>
+  <data name="open_file_dialog_error" xml:space="preserve">
+    <value>Nie udało się otworzyć pliku</value>
+  </data>
+  <data name="open_file_dialog_message_title" xml:space="preserve">
+    <value>Otwieranie pliku</value>
+  </data>
+  <data name="open_file_dialog_success" xml:space="preserve">
+    <value>Pomyślnie wczytano plik!</value>
+  </data>
+  <data name="save_file_dialog_error" xml:space="preserve">
+    <value>Nie udało się zapisać pliku</value>
+  </data>
+  <data name="save_file_dialog_message_title" xml:space="preserve">
+    <value>Zapisywanie pliku</value>
+  </data>
+  <data name="save_file_dialog_success" xml:space="preserve">
+    <value>Pomyślnie zapisano plik</value>
   </data>
 </root>

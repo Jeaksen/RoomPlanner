@@ -3,19 +3,17 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 using System.IO;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Globalization;
-using Lab2_winforms.Properties;
 using System.Resources;
 
 namespace Lab2_winforms
 {
 
-    public partial class Form1 : Form
+    public partial class RoomPlanner : Form
     {
         private Button selectedButton = null;
         private List<Point> wallPoints = new List<Point>();
@@ -30,20 +28,15 @@ namespace Lab2_winforms
 
         private int Distance(Point p1, Point p2) => (int)Math.Sqrt((Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2)));
 
-        public Form1()
+        public RoomPlanner()
         {
             cultures.Add(CultureInfo.GetCultureInfo("en-GB"));
             cultures.Add(CultureInfo.GetCultureInfo("pl-PL"));
             InitializeComponent();
+            this.pictureBox1.Size = panel1.Size;
             RefreshBitmap();
             bindingSource1.DataSource = planElements;
         }
-
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-
 
         private void newBitmap_Click(object sender, EventArgs e)
         {
@@ -227,7 +220,10 @@ namespace Lab2_winforms
                 planElements[planElements.Count - 1].GraphicsPath = new GraphicsPath(wallPoints.ToArray(), pathPointTypes);
             }
             else
+            {
                 planElements.RemoveAt(planElements.Count - 1);
+                furnitureList.SelectedIndex = -1;
+            }
 
             wallPoints.Clear();
             creatingWall = false;
@@ -318,7 +314,7 @@ namespace Lab2_winforms
             arg.Handled = true;
             if (selectedIndex != -1)
             {
-                planElements[selectedIndex].Rotation += e.Delta / 5;
+                planElements[selectedIndex].Rotation += e.Delta / 20;
                 RefreshBitmap();
             }
         }
@@ -352,26 +348,30 @@ namespace Lab2_winforms
         {
             if (selectedIndex != -1 && e.KeyCode == Keys.Delete)
             {
-                planElements.RemoveAt(selectedIndex);
-                selectedIndex = -1;
+                int tempIdx = selectedIndex;
                 movingAnchor = null;
-                movingObject = false;
-                creatingWall = false;
+                movingObject = creatingWall = false;
                 wallPoints.Clear();
                 furnitureList.SelectedIndex = selectedIndex = -1;
+                planElements.RemoveAt(tempIdx);
+                if (planElements.Count > 0)
+                {
+                    planElements[furnitureList.SelectedIndex].IsSelected = false;
+                    furnitureList.SelectedIndex = -1;
+                }
                 RefreshBitmap();
             }
         }
 
         private void Save_Click(object sender, EventArgs e)
         {
-            ResourceManager resources = new ResourceManager(typeof(Form1));
-            Stream stream = null;
+            ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
             SaveFileDialog fileDialog = new SaveFileDialog();
+            Stream stream = null;
+            
 
             fileDialog.Filter = resources.GetString("file_dialog_filter");
             fileDialog.DefaultExt = ".bm";
-            fileDialog.RestoreDirectory = true;
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -386,7 +386,8 @@ namespace Lab2_winforms
                     if ((stream = fileDialog.OpenFile()) != null)
                     {
                         BinaryFormatter formatter = new BinaryFormatter();
-
+                        if (planElements.Count > 0)
+                            planElements[0].BitmapSize = this.pictureBox1.Size;
                         formatter.Serialize(stream, planElements);
                         MessageBox.Show(resources.GetString("save_file_dialog_success"), resources.GetString("save_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -406,43 +407,46 @@ namespace Lab2_winforms
 
         private void Open_Click(object sender, EventArgs e)
         {
-            ResourceManager resources = new ResourceManager(typeof(Form1));
+            ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            Stream stream = null;
 
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            fileDialog.Filter = resources.GetString("file_dialog_filter");
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                openFileDialog.Filter = resources.GetString("file_dialog_filter");
-                var fileDialog = new OpenFileDialog();
-                if (fileDialog.ShowDialog() == DialogResult.OK)
+                var parts = fileDialog.FileName.Split('.');
+                if (parts[parts.Length - 1] != "bm")
                 {
-                    var parts = fileDialog.FileName.Split('.');
-                    if (parts[parts.Length - 1] != "bm")
-                    {
-                        MessageBox.Show(resources.GetString("file_dialog_extenstion_error"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    Stream stream = null;
-                    try
-                    {
-                        stream = openFileDialog.OpenFile();
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        planElements.Clear();
-                        foreach (var item in (BindingList<Data>)formatter.Deserialize(stream))
-                            planElements.Add(item);
-                        MessageBox.Show(resources.GetString("open_file_dialog_success"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        RefreshBitmap();
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show(resources.GetString("open_file_dialog_error2"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    finally
-                    {
-                        if (stream != null)
-                            stream.Close();
-                    }
-                    furnitureList.SelectedIndex = -1;
+                    MessageBox.Show(resources.GetString("file_dialog_extenstion_error"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
+                try
+                {
+                    stream = fileDialog.OpenFile();
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    var items = (BindingList<Data>)formatter.Deserialize(stream);
+                    planElements.Clear();
+                    foreach (var item in items)
+                    {
+                        planElements.Add(item);
+                    }
+                    if (planElements.Count > 0)
+                        this.pictureBox1.Size = planElements[0].BitmapSize;
+                    RefreshBitmap();
+
+                    MessageBox.Show(resources.GetString("open_file_dialog_success"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(resources.GetString("open_file_dialog_error"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    if (stream != null)
+                        stream.Close();
+                }
+                furnitureList.SelectedIndex = -1;
             }
             
         }
@@ -465,7 +469,7 @@ namespace Lab2_winforms
 
         private void RefreshStrings()
         {
-            ResourceManager resources = new ResourceManager(typeof(Form1));
+            ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
 
             this.Text = resources.GetString("$this.Text");
             this.add_furniture_box.Text = resources.GetString("add_furniture_box.Text");

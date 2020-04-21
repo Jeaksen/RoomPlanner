@@ -31,6 +31,8 @@ namespace Lab2_winforms
             }
         }
 
+        public Size BitmapSize { get; set; }
+
         public int Rotation { get => rotation; set { rotation = value % 360; } }
 
         public Data(Image img, Point pt, string text)
@@ -48,8 +50,8 @@ namespace Lab2_winforms
 
         public override string ToString()
         {
-            ResourceManager resources = new ResourceManager(typeof(Form1));
-            return $"{resources.GetString(Text)} {Point}";
+            ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
+            return $"{resources.GetString(Text), -15} {Point}";
         }
 
         [OnSerializing()]
