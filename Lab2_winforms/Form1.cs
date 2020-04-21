@@ -9,6 +9,8 @@ using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Globalization;
+using Lab2_winforms.Properties;
+using System.Resources;
 
 namespace Lab2_winforms
 {
@@ -23,17 +25,25 @@ namespace Lab2_winforms
         private Point? movingAnchor = null;
         private const int WALL_WIDTH = 10;
         private int selectedIndex = -1;
+        private List<CultureInfo> cultures = new List<CultureInfo> ();
 
 
         private int Distance(Point p1, Point p2) => (int)Math.Sqrt((Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2)));
 
         public Form1()
         {
+            cultures.Add(CultureInfo.GetCultureInfo("en-GB"));
+            cultures.Add(CultureInfo.GetCultureInfo("pl-PL"));
             InitializeComponent();
             RefreshBitmap();
             bindingSource1.DataSource = planElements;
-            //CultureInfo.CurrentUICulture;
         }
+
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
 
         private void newBitmap_Click(object sender, EventArgs e)
         {
@@ -168,25 +178,18 @@ namespace Lab2_winforms
         {
             Bitmap bitmap = (Bitmap)selectedButton.Tag;
 
-            Bitmap bmp = new Bitmap(bitmap.Width, bitmap.Height);
-
-            Graphics g = Graphics.FromImage(bmp);
-            DrawFurniture(g, bitmap, new Point(bitmap.Width / 2, bitmap.Height / 2));
-            g.Dispose();
-
-            g = Graphics.FromImage(pictureBox1.Image);
-
-            DrawFurniture(g, bmp, location);
+            Graphics g = Graphics.FromImage(pictureBox1.Image);
+            DrawFurniture(g, bitmap, location);
             g.Dispose();
 
             if (selectedButton == coffee_button)
-                planElements.Add(new Data(bmp, location, "Coffe table"));
+                planElements.Add(new Data(bitmap, location, "coffe_table"));
             else if (selectedButton == bed_button)
-                planElements.Add(new Data(bmp, location, "Double bed"));
+                planElements.Add(new Data(bitmap, location, "double_bed"));
             else if (selectedButton == sofa_button)
-                planElements.Add(new Data(bmp, location, "Sofa"));
+                planElements.Add(new Data(bitmap, location, "sofa"));
             else if (selectedButton == table_button)
-                planElements.Add(new Data(bmp, location, "Table"));
+                planElements.Add(new Data(bitmap, location, "table"));
 
             furnitureList.SelectedIndex = -1;
             pictureBox1.Refresh();
@@ -197,7 +200,7 @@ namespace Lab2_winforms
         {
             if (!creatingWall)
             {
-                planElements.Add(new Data(location, "Wall"));
+                planElements.Add(new Data(location, "wall"));
                 wallPoints.Add(location);
                 creatingWall = true;
                 furnitureList.SelectedIndex = -1;
@@ -212,10 +215,7 @@ namespace Lab2_winforms
         private void SaveWall()
         {
             if (!creatingWall) return;
-            int indexLast = planElements.Count - 1;
-            if (planElements[indexLast].Image != null) throw new Exception("Last element of objects list is not an wall element");
-            if (planElements[indexLast].GraphicsPath != null) throw new Exception("Last element of objects list already has a GraphicsPath");
-            // Last point is the temporary one used for drawing
+
             if (wallPoints.Count > 2)
             {
                 wallPoints.RemoveAt(wallPoints.Count - 1);
@@ -223,12 +223,12 @@ namespace Lab2_winforms
                 for (int i = 0; i < pathPointTypes.Length; i++)
                     pathPointTypes[i] = (byte)PathPointType.Line;
 
-                planElements[indexLast].GraphicsPath = new GraphicsPath(wallPoints.ToArray(), pathPointTypes);
+                // Last point is the temporary one used for drawing the wall
+                planElements[planElements.Count - 1].GraphicsPath = new GraphicsPath(wallPoints.ToArray(), pathPointTypes);
             }
             else
-            {
                 planElements.RemoveAt(planElements.Count - 1);
-            }
+
             wallPoints.Clear();
             creatingWall = false;
             RefreshBitmap();
@@ -248,11 +248,9 @@ namespace Lab2_winforms
 
             foreach (var data in planElements)
             {
-                if (data.Image == null) // if the wall is currently created it's graphics path is set to null
-                {
-                    if (data.GraphicsPath != null) DrawWall(g, data.GraphicsPath, data.IsSelected, data.RotationDelta, data.Point);
-                }
-                else //printing furniture
+                if (data.GraphicsPath != null) // if the wall is currently created it's graphics path is set to null
+                    DrawWall(g, data.GraphicsPath, data.IsSelected, data.RotationDelta, data.Point);
+                else if (data.Image != null) //printing furniture
                     DrawFurniture(g, data.Image, data.Point, data.IsSelected, data.Rotation);
             }
         }
@@ -367,10 +365,11 @@ namespace Lab2_winforms
 
         private void Save_Click(object sender, EventArgs e)
         {
+            ResourceManager resources = new ResourceManager(typeof(Form1));
             Stream stream = null;
             SaveFileDialog fileDialog = new SaveFileDialog();
 
-            fileDialog.Filter = "Room plans (*.bm)|*.bm";
+            fileDialog.Filter = resources.GetString("file_dialog_filter");
             fileDialog.DefaultExt = ".bm";
             fileDialog.RestoreDirectory = true;
 
@@ -379,7 +378,7 @@ namespace Lab2_winforms
                 var parts = fileDialog.FileName.Split('.');
                 if (parts[parts.Length - 1] != "bm")
                 {
-                    MessageBox.Show("Invalid file exstension!", "Saving info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(resources.GetString("file_dialog_extenstion_error"), resources.GetString("save_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
                 try
@@ -389,12 +388,12 @@ namespace Lab2_winforms
                         BinaryFormatter formatter = new BinaryFormatter();
 
                         formatter.Serialize(stream, planElements);
-                        MessageBox.Show("File saved!", "Saving info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(resources.GetString("save_file_dialog_success"), resources.GetString("save_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Failed to save the file!", "Saving info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(resources.GetString("save_file_dialog_error"), resources.GetString("save_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {
@@ -407,16 +406,18 @@ namespace Lab2_winforms
 
         private void Open_Click(object sender, EventArgs e)
         {
+            ResourceManager resources = new ResourceManager(typeof(Form1));
+
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Room plans (*.bm)|*.bm";
+                openFileDialog.Filter = resources.GetString("file_dialog_filter");
                 var fileDialog = new OpenFileDialog();
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     var parts = fileDialog.FileName.Split('.');
                     if (parts[parts.Length - 1] != "bm")
                     {
-                        MessageBox.Show("Invalid file exstension!", "Opening info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(resources.GetString("file_dialog_extenstion_error"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                     Stream stream = null;
@@ -427,13 +428,13 @@ namespace Lab2_winforms
                         planElements.Clear();
                         foreach (var item in (BindingList<Data>)formatter.Deserialize(stream))
                             planElements.Add(item);
-                        MessageBox.Show("File opened!", "Opening info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(resources.GetString("open_file_dialog_success"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         RefreshBitmap();
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("Failed to open the file!", "Opening info", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(resources.GetString("open_file_dialog_error2"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     finally
                     {
@@ -444,6 +445,41 @@ namespace Lab2_winforms
                 }
             }
             
+        }
+
+        private void englishToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CultureInfo.CurrentCulture == cultures[0]) return;
+            CultureInfo.CurrentCulture = cultures[0];
+            CultureInfo.CurrentUICulture = cultures[0];
+            RefreshStrings();
+        }
+
+        private void polskiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CultureInfo.CurrentCulture == cultures[1]) return;
+            CultureInfo.CurrentCulture = cultures[1];
+            CultureInfo.CurrentUICulture = cultures[1];
+            RefreshStrings();
+        }
+
+        private void RefreshStrings()
+        {
+            ResourceManager resources = new ResourceManager(typeof(Form1));
+
+            this.Text = resources.GetString("$this.Text");
+            this.add_furniture_box.Text = resources.GetString("add_furniture_box.Text");
+            this.created_furniture_box.Text = resources.GetString("created_furniture_box.Text");
+            this.FileMenu.Text = resources.GetString("FileMenu.Text");
+            this.furnitureList.Text = resources.GetString("furnitureList.Text");
+            this.languageToolStripMenuItem.Text = resources.GetString("languageToolStripMenuItem.Text");
+            this.newBlueprintToolStripMenuItem.Text = resources.GetString("newBlueprintToolStripMenuItem.Text");
+            this.openToolStripMenuItem.Text = resources.GetString("openToolStripMenuItem.Text");
+            this.saveToolStripMenuItem.Text = resources.GetString("saveToolStripMenuItem.Text");
+            this.englishToolStripMenuItem.Text = resources.GetString("englishToolStripMenuItem.Text");
+            this.polskiToolStripMenuItem.Text = resources.GetString("polskiToolStripMenuItem.Text");
+            planElements.ResetBindings();
+            this.Refresh();
         }
     }
 }

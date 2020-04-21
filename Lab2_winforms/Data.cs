@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Resources;
 using System.Runtime.Serialization;
 
 namespace Lab2_winforms
@@ -47,7 +48,8 @@ namespace Lab2_winforms
 
         public override string ToString()
         {
-            return $"{Text} {Point}";
+            ResourceManager resources = new ResourceManager(typeof(Form1));
+            return $"{resources.GetString(Text)} {Point}";
         }
 
         [OnSerializing()]
