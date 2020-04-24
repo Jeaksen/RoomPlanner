@@ -26,6 +26,12 @@ namespace Lab2_winforms
         private List<CultureInfo> cultures = new List<CultureInfo> ();
 
 
+        /// <summary>
+        /// Calculated the distance between two points
+        /// </summary>
+        /// <param name="p1">First point</param>
+        /// <param name="p2">Second point</param>
+        /// <returns>Distance rounded down</returns>
         private int Distance(Point p1, Point p2) => (int)Math.Sqrt((Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2)));
 
         public RoomPlanner()
@@ -33,19 +39,27 @@ namespace Lab2_winforms
             cultures.Add(CultureInfo.GetCultureInfo("en-GB"));
             cultures.Add(CultureInfo.GetCultureInfo("pl-PL"));
             InitializeComponent();
-            this.pictureBox1.Size = panel1.Size;
-            RefreshBitmap();
             bindingSource1.DataSource = planElements;
+            pictureBox1.Size = panel1.Size;
+            RefreshBitmap();
         }
 
+        /// <summary>
+        /// Handles 'New Bitmap' button press - resets elements, clears flags and elements list, refreshes bitmap
+        /// </summary>
         private void newBitmap_Click(object sender, EventArgs e)
         {
             bindingSource1.Clear();
             wallPoints.Clear();
-            creatingWall = false;
+            creatingWall = movingObject = false;
+            movingAnchor = null;
+            selectedIndex = -1;
             RefreshBitmap();
         }
 
+        /// <summary>
+        /// Assigns a new bitmap with size of PictureBox the Image property of the PictureBox 
+        /// </summary>
         private void RefreshBitmap()
         {
             Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
@@ -53,14 +67,29 @@ namespace Lab2_winforms
             pictureBox1.Refresh();
         }
 
+
+        /// <summary>
+        /// Handles Click event for element buttons. Selects/deselects a button. If an element was selected removes the selection and refreshes the bitmap 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Furniture_Button_Click(object sender, EventArgs e)
         {
             ChangeButtonSelection((Button)sender, true);
-            if (selectedIndex >= 0) planElements[selectedIndex].IsSelected = false;
-            furnitureList.SelectedIndex = selectedIndex = -1;
-            RefreshBitmap();
+            if (selectedIndex >= 0)
+            {
+                planElements[selectedIndex].IsSelected = false;
+                furnitureList.SelectedIndex = selectedIndex = -1;
+                RefreshBitmap();
+            }
         }
 
+        /// <summary>
+        /// Change the selection of a button
+        /// </summary>
+        /// <param name="button">Button for which the selection will be changed</param>
+        /// <param name="select">Flag indication whether the button should be selected(true) of deselected(false). 
+        /// If true is given, and a button is already selected it will be deselected</param>
         private void ChangeButtonSelection(Button button, bool select)
         {
             if (button == null) return;
@@ -85,6 +114,12 @@ namespace Lab2_winforms
             }
         }
 
+        /// <summary>
+        /// Handles mouse buttons event for the PictueBox. If an element button is selected: drawn a element on left click, saves the wall on right click and wall selected. 
+        /// If no button is selected tries to select an element.  
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             // No buttons selected - checking for item selection
@@ -95,7 +130,7 @@ namespace Lab2_winforms
             else if (selectedButton == wall_button)
             {
                 if (e.Button == MouseButtons.Left)
-                    AddWallPoint(e.Location, false);
+                    AddWallPoint(e.Location);
                 if (creatingWall && e.Button == MouseButtons.Right)
                 {
                     SaveWall();
@@ -109,6 +144,22 @@ namespace Lab2_winforms
             }
         }
 
+
+        /// <summary>
+        /// Handles the MouseUp event for the PictureBox. Clears the flag indication that an element is moved and clears the anchor point
+        /// </summary>
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            movingObject = false;
+            movingAnchor = null;
+        }
+
+        /// <summary>
+        /// This function checks if at the given location there is any element. If there is it is selected
+        /// If a wall is hit directly it is immediately selected, else a furniture element whose center is the closest to the location is chosen among those
+        /// for which the location is within the size of the image. If nothing was hit the current element is deselected.
+        /// </summary>
+        /// <param name="location"></param>
         private void TrySelect(Point location)
         {
             if (planElements.Count == 0) return;
@@ -150,23 +201,33 @@ namespace Lab2_winforms
             RefreshBitmap();
         }
 
+        /// <summary>
+        /// Checks whether a furniture element was selected
+        /// </summary>
+        /// <param name="data">Data object describing the furniture element</param>
+        /// <param name="point">Mouse click location</param>
+        /// <returns>Flag indicating whether the was a hit</returns>
         private bool TestBitmapHit(Data data, Point point)
         {
             return Math.Abs(data.Point.X - point.X) < data.Image.Width / 2 && Math.Abs(data.Point.Y - point.Y) < data.Image.Height / 2;
         }
 
+        /// <summary>
+        /// Checks whether a wall element was selected
+        /// </summary>
+        /// <param name="data">Data object describing the wall element</param>
+        /// <param name="point">Mouse click location</param>
+        /// <returns>Flag indicating whether the was a hit</returns>
         private bool TestWallHit (Data data, Point point)
         {
             return data.GraphicsPath.IsOutlineVisible(point, new Pen(Color.Black, WALL_WIDTH));
         }
 
-        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-            movingObject = false;
-            pictureBox1.Capture = false;
-            movingAnchor = null;
-        }
-
+        /// <summary>
+        /// Adds a new furniture to the planElements at a given location. The furniture type is deduced from the selected button
+        /// Forces the PictureBox to redraw, but the bitmap is not refreshed.
+        /// </summary>
+        /// <param name="location">Center point of the furniture to be drawn</param>
         private void AddNewFurniture(Point location)
         {
             Bitmap bitmap = (Bitmap)selectedButton.Tag;
@@ -189,7 +250,12 @@ namespace Lab2_winforms
             ChangeButtonSelection(selectedButton, false);
         }
 
-        private void AddWallPoint(Point location, bool liveDrawing)
+        /// <summary>
+        /// Adds the given point to the currently drawn wall and refreshes the bitmap
+        /// </summary>
+        /// <param name="location">New point of the wall</param>
+        /// <param name="liveDrawing">Optional parameter, if set to true the last point is removed. Used for drawing the wall at the mouse position</param>
+        private void AddWallPoint(Point location, bool liveDrawing = false)
         {
             if (!creatingWall)
             {
@@ -205,6 +271,11 @@ namespace Lab2_winforms
             RefreshBitmap();
         }
 
+
+        /// <summary>
+        /// When a wall is no longer drawn this function shall be called to save it to the planElements list.
+        /// If the wall consists of two points (start point and the current mouse position) it is removed.
+        /// </summary>
         private void SaveWall()
         {
             if (!creatingWall) return;
@@ -230,6 +301,10 @@ namespace Lab2_winforms
             RefreshBitmap();
         }
 
+
+        /// <summary>
+        /// Handles paint event for the PictureBox. Draws all elements belonging to the plan.
+        /// </summary>
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -251,6 +326,14 @@ namespace Lab2_winforms
             }
         }
 
+        /// <summary>
+        /// Draws the passed GraphicsPath using the given Graphics
+        /// </summary>
+        /// <param name="g">Graphics used to draw the image</param>
+        /// <param name="path">Graphics which shall be drawn</param>
+        /// <param name="semitransparent">Optional flag, is set to true the path is drawn with 50% opacity</param>
+        /// <param name="rotation">Optional parameter by which the path will be rotated</param>
+        /// <param name="location">Optional parameter, the first point of the path is translated to this location</param>
         private void DrawWall(Graphics g, GraphicsPath path, bool semitransparent = false, float rotation = 0, Point? location = null)
         {
             Color color = semitransparent ? Color.FromArgb(255 / 2, Color.Black) : Color.Black;
@@ -268,6 +351,14 @@ namespace Lab2_winforms
             wallPen.Dispose();
         }
 
+        /// <summary>
+        /// Draws the passed image using the given Graphics centered on the given location
+        /// </summary>
+        /// <param name="g">Graphics used to draw the image</param>
+        /// <param name="image">Image which shall be drawn</param>
+        /// <param name="center">Point indicating where the center of the image should be</param>
+        /// <param name="semitransparent">Optional flag, is set to true the image is drawn with 50% opacity</param>
+        /// <param name="rotation">Optional parameter by which the image will be rotated</param>
         private void DrawFurniture(Graphics g, Image image, Point center, bool semitransparent = false, float rotation = 0)
         {
             if (rotation != 0)
@@ -299,6 +390,10 @@ namespace Lab2_winforms
             g.ResetTransform();
         }
 
+
+        /// <summary>
+        /// Handles change of size of the Panel storing the PicutreBox. If the size has increased increases the size of the PictureBox and refreshes the bitmap.
+        /// </summary>
         private void panel1_SizeChanged(object sender, EventArgs e)
         {
             if (panel1.Height > pictureBox1.Height || panel1.Width > pictureBox1.Width)
@@ -308,6 +403,11 @@ namespace Lab2_winforms
             }
         }
         
+
+        /// <summary>
+        /// Handles mouse wheel event for the PictureBox. If an element is selected adds the scaled wheel movement to the total rotation of the object.
+        /// Stops the wheel event from being propagated further. 
+        /// </summary>
         private void pictureBox1_MouseWheel(object sender, MouseEventArgs e)
         {
             HandledMouseEventArgs arg = (HandledMouseEventArgs)e;
@@ -319,6 +419,11 @@ namespace Lab2_winforms
             }
         }
 
+
+        /// <summary>
+        /// Handles mouse movement event for the PictureBox. If a wall is currently drawn adds the new mouse position to the temp wall. 
+        /// If an element is moved translates its position and refreshes the bitmap
+        /// </summary>
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (creatingWall)
@@ -332,6 +437,10 @@ namespace Lab2_winforms
 
         }
 
+
+        /// <summary>
+        /// Handles change of selected index in the ListBox. If an element was selected, deselects it first, then marks the new one as selected
+        /// </summary>
         private void furnitureList_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (selectedIndex >= 0 && selectedIndex < planElements.Count)
@@ -344,25 +453,30 @@ namespace Lab2_winforms
             }
         }
 
+
+        /// <summary>
+        /// Handles keyboard input. If there is an selected element and Keys.Delete was pressed 
+        /// removes the element, and clears appropriate flags and variables
+        /// </summary>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (selectedIndex != -1 && e.KeyCode == Keys.Delete)
             {
-                int tempIdx = selectedIndex;
+                planElements.RemoveAt(selectedIndex);
                 movingAnchor = null;
-                movingObject = creatingWall = false;
-                wallPoints.Clear();
+                movingObject = false;
                 furnitureList.SelectedIndex = selectedIndex = -1;
-                planElements.RemoveAt(tempIdx);
-                if (planElements.Count > 0)
-                {
-                    planElements[furnitureList.SelectedIndex].IsSelected = false;
-                    furnitureList.SelectedIndex = -1;
-                }
+                if (planElements.Count > 0) // Removing an element launches the IndexChanged event, so the selection has to be removed 
+                    planElements[planElements.Count - 1].IsSelected = false;
                 RefreshBitmap();
             }
         }
 
+
+        /// <summary>
+        /// Handles Save button press, displays a SaveFileDilog, tries to open the file and serialize the planElements list to it.
+        /// Displays MessageBoxes indicating success/failure.
+        /// </summary>
         private void Save_Click(object sender, EventArgs e)
         {
             ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
@@ -371,12 +485,11 @@ namespace Lab2_winforms
             
 
             fileDialog.Filter = resources.GetString("file_dialog_filter");
-            fileDialog.DefaultExt = ".bm";
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 var parts = fileDialog.FileName.Split('.');
-                if (parts[parts.Length - 1] != "bm")
+                if (parts[parts.Length - 1] != "bm") // Checks whether the extension is correct
                 {
                     MessageBox.Show(resources.GetString("file_dialog_extenstion_error"), resources.GetString("save_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -405,6 +518,11 @@ namespace Lab2_winforms
             }
         }
 
+
+        /// <summary>
+        /// Handles Open button press, displays a OpenFileDilog, tries to open the file and deserialize it to the planElements variable.
+        /// Displays MessageBoxes indicating success/failure.
+        /// </summary>
         private void Open_Click(object sender, EventArgs e)
         {
             ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
@@ -416,7 +534,7 @@ namespace Lab2_winforms
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 var parts = fileDialog.FileName.Split('.');
-                if (parts[parts.Length - 1] != "bm")
+                if (parts[parts.Length - 1] != "bm") // Checks whether the extension is correct
                 {
                     MessageBox.Show(resources.GetString("file_dialog_extenstion_error"), resources.GetString("open_file_dialog_message_title"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -451,39 +569,46 @@ namespace Lab2_winforms
             
         }
 
+
+        /// <summary>
+        /// Handles English language button press, changes the app language to English
+        /// </summary>
         private void englishToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (CultureInfo.CurrentCulture == cultures[0]) return;
+            if (CultureInfo.CurrentCulture.Equals(cultures[0])) return;
             CultureInfo.CurrentCulture = cultures[0];
             CultureInfo.CurrentUICulture = cultures[0];
-            RefreshStrings();
+            RefreshForm();
         }
 
+
+        /// <summary>
+        /// Handles Polish language button press, changes the app language to Polish
+        /// </summary>
         private void polskiToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (CultureInfo.CurrentCulture == cultures[1]) return;
+            if (CultureInfo.CurrentCulture.Equals(cultures[1])) return;
             CultureInfo.CurrentCulture = cultures[1];
             CultureInfo.CurrentUICulture = cultures[1];
-            RefreshStrings();
+            RefreshForm();
         }
 
-        private void RefreshStrings()
+        /// <summary>
+        /// Reloads the form
+        /// </summary>
+        private void RefreshForm()
         {
-            ResourceManager resources = new ResourceManager(typeof(RoomPlanner));
-
-            this.Text = resources.GetString("$this.Text");
-            this.add_furniture_box.Text = resources.GetString("add_furniture_box.Text");
-            this.created_furniture_box.Text = resources.GetString("created_furniture_box.Text");
-            this.FileMenu.Text = resources.GetString("FileMenu.Text");
-            this.furnitureList.Text = resources.GetString("furnitureList.Text");
-            this.languageToolStripMenuItem.Text = resources.GetString("languageToolStripMenuItem.Text");
-            this.newBlueprintToolStripMenuItem.Text = resources.GetString("newBlueprintToolStripMenuItem.Text");
-            this.openToolStripMenuItem.Text = resources.GetString("openToolStripMenuItem.Text");
-            this.saveToolStripMenuItem.Text = resources.GetString("saveToolStripMenuItem.Text");
-            this.englishToolStripMenuItem.Text = resources.GetString("englishToolStripMenuItem.Text");
-            this.polskiToolStripMenuItem.Text = resources.GetString("polskiToolStripMenuItem.Text");
-            planElements.ResetBindings();
-            this.Refresh();
+            Size windowSize = Size;
+            Size pictureSize = pictureBox1.Size;
+            Size listSize = furnitureList.Size;
+            Controls.Clear();
+            InitializeComponent();
+            bindingSource1.DataSource = planElements;
+            Size = windowSize;
+            furnitureList.Size = listSize;
+            pictureBox1.Size = pictureSize;
+            furnitureList.SelectedIndex = selectedIndex;
+            RefreshBitmap();
         }
     }
 }

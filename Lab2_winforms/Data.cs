@@ -7,6 +7,9 @@ using System.Runtime.Serialization;
 
 namespace Lab2_winforms
 {
+    /// <summary>
+    /// This class is used to save data needed for drawing furniture and paths
+    /// </summary>
     [Serializable]
     public class Data
     {
@@ -16,11 +19,11 @@ namespace Lab2_winforms
         private GraphicsPath graphicsPath = null;
         private PointF[] wallPoints = null;
         
-        public GraphicsPath GraphicsPath { get => graphicsPath; set => graphicsPath = value; }
         public Image Image { get; set; }
         public Point Point { get; set; }
         public string Text { get; set; }
         public bool IsSelected { get; set; }
+        public Size BitmapSize { get; set; }
         public int RotationDelta 
         { 
             get
@@ -30,8 +33,7 @@ namespace Lab2_winforms
                 return delta;
             }
         }
-
-        public Size BitmapSize { get; set; }
+        public GraphicsPath GraphicsPath { get => graphicsPath; set => graphicsPath = value; }
 
         public int Rotation { get => rotation; set { rotation = value % 360; } }
 
@@ -54,6 +56,10 @@ namespace Lab2_winforms
             return $"{resources.GetString(Text), -15} {Point}";
         }
 
+
+        /// <summary>
+        /// Transforms the GraphicsPath into an array of point, so that they can be serialized
+        /// </summary>
         [OnSerializing()]
         internal void OnSerializingMethod(StreamingContext context)
         {
@@ -61,6 +67,10 @@ namespace Lab2_winforms
                 wallPoints = graphicsPath.PathData.Points;
         }
 
+
+        /// <summary>
+        /// Transforms the array of points into a graphics path and clears the array
+        /// </summary>
         [OnDeserialized()]
         internal void OnDeserializingMethod(StreamingContext context)
         {

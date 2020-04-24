@@ -81,7 +81,6 @@ namespace Lab2_winforms
             // 
             // splitContainer.Panel2
             // 
-            resources.ApplyResources(this.splitContainer.Panel2, "splitContainer.Panel2");
             this.splitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
             // 
             // panel1
@@ -93,8 +92,8 @@ namespace Lab2_winforms
             // 
             // pictureBox1
             // 
-            resources.ApplyResources(this.pictureBox1, "pictureBox1");
             this.pictureBox1.BackColor = System.Drawing.Color.White;
+            resources.ApplyResources(this.pictureBox1, "pictureBox1");
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -112,8 +111,8 @@ namespace Lab2_winforms
             // 
             // add_furniture_box
             // 
-            resources.ApplyResources(this.add_furniture_box, "add_furniture_box");
             this.add_furniture_box.Controls.Add(this.flowLayoutPanel1);
+            resources.ApplyResources(this.add_furniture_box, "add_furniture_box");
             this.add_furniture_box.Name = "add_furniture_box";
             this.add_furniture_box.TabStop = false;
             // 
@@ -129,9 +128,9 @@ namespace Lab2_winforms
             // 
             // coffee_button
             // 
-            resources.ApplyResources(this.coffee_button, "coffee_button");
             this.coffee_button.BackColor = System.Drawing.Color.White;
             this.coffee_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.coffee_table;
+            resources.ApplyResources(this.coffee_button, "coffee_button");
             this.coffee_button.Cursor = System.Windows.Forms.Cursors.Hand;
             this.coffee_button.Name = "coffee_button";
             this.coffee_button.Tag = global::Lab2_winforms.Properties.Resources.coffee_table;
@@ -140,9 +139,9 @@ namespace Lab2_winforms
             // 
             // table_button
             // 
-            resources.ApplyResources(this.table_button, "table_button");
             this.table_button.BackColor = System.Drawing.Color.White;
             this.table_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.table;
+            resources.ApplyResources(this.table_button, "table_button");
             this.table_button.Cursor = System.Windows.Forms.Cursors.Hand;
             this.table_button.Name = "table_button";
             this.table_button.Tag = global::Lab2_winforms.Properties.Resources.table;
@@ -151,9 +150,9 @@ namespace Lab2_winforms
             // 
             // sofa_button
             // 
-            resources.ApplyResources(this.sofa_button, "sofa_button");
             this.sofa_button.BackColor = System.Drawing.Color.White;
             this.sofa_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.sofa;
+            resources.ApplyResources(this.sofa_button, "sofa_button");
             this.sofa_button.Cursor = System.Windows.Forms.Cursors.Hand;
             this.sofa_button.Name = "sofa_button";
             this.sofa_button.Tag = global::Lab2_winforms.Properties.Resources.sofa;
@@ -162,9 +161,9 @@ namespace Lab2_winforms
             // 
             // bed_button
             // 
-            resources.ApplyResources(this.bed_button, "bed_button");
             this.bed_button.BackColor = System.Drawing.Color.White;
             this.bed_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.double_bed;
+            resources.ApplyResources(this.bed_button, "bed_button");
             this.bed_button.Cursor = System.Windows.Forms.Cursors.Hand;
             this.bed_button.Name = "bed_button";
             this.bed_button.Tag = global::Lab2_winforms.Properties.Resources.double_bed;
@@ -173,9 +172,9 @@ namespace Lab2_winforms
             // 
             // wall_button
             // 
-            resources.ApplyResources(this.wall_button, "wall_button");
             this.wall_button.BackColor = System.Drawing.Color.White;
             this.wall_button.BackgroundImage = global::Lab2_winforms.Properties.Resources.wall;
+            resources.ApplyResources(this.wall_button, "wall_button");
             this.wall_button.Cursor = System.Windows.Forms.Cursors.Hand;
             this.wall_button.Name = "wall_button";
             this.wall_button.Tag = global::Lab2_winforms.Properties.Resources.wall;
@@ -184,73 +183,73 @@ namespace Lab2_winforms
             // 
             // created_furniture_box
             // 
-            resources.ApplyResources(this.created_furniture_box, "created_furniture_box");
             this.created_furniture_box.Controls.Add(this.furnitureList);
+            resources.ApplyResources(this.created_furniture_box, "created_furniture_box");
             this.created_furniture_box.Name = "created_furniture_box";
             this.created_furniture_box.TabStop = false;
             // 
             // furnitureList
             // 
-            resources.ApplyResources(this.furnitureList, "furnitureList");
             this.furnitureList.DataSource = this.bindingSource1;
+            resources.ApplyResources(this.furnitureList, "furnitureList");
             this.furnitureList.FormattingEnabled = true;
             this.furnitureList.Name = "furnitureList";
             this.furnitureList.SelectedIndexChanged += new System.EventHandler(this.furnitureList_SelectedIndexChanged);
             // 
             // menuStrip1
             // 
-            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileMenu});
+            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
             // 
             // FileMenu
             // 
-            resources.ApplyResources(this.FileMenu, "FileMenu");
             this.FileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newBlueprintToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.languageToolStripMenuItem});
             this.FileMenu.Name = "FileMenu";
+            resources.ApplyResources(this.FileMenu, "FileMenu");
             // 
             // newBlueprintToolStripMenuItem
             // 
-            resources.ApplyResources(this.newBlueprintToolStripMenuItem, "newBlueprintToolStripMenuItem");
             this.newBlueprintToolStripMenuItem.Name = "newBlueprintToolStripMenuItem";
+            resources.ApplyResources(this.newBlueprintToolStripMenuItem, "newBlueprintToolStripMenuItem");
             this.newBlueprintToolStripMenuItem.Click += new System.EventHandler(this.newBitmap_Click);
             // 
             // openToolStripMenuItem
             // 
-            resources.ApplyResources(this.openToolStripMenuItem, "openToolStripMenuItem");
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            resources.ApplyResources(this.openToolStripMenuItem, "openToolStripMenuItem");
             this.openToolStripMenuItem.Click += new System.EventHandler(this.Open_Click);
             // 
             // saveToolStripMenuItem
             // 
-            resources.ApplyResources(this.saveToolStripMenuItem, "saveToolStripMenuItem");
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            resources.ApplyResources(this.saveToolStripMenuItem, "saveToolStripMenuItem");
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.Save_Click);
             // 
             // languageToolStripMenuItem
             // 
-            resources.ApplyResources(this.languageToolStripMenuItem, "languageToolStripMenuItem");
             this.languageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.englishToolStripMenuItem,
             this.polskiToolStripMenuItem});
             this.languageToolStripMenuItem.Name = "languageToolStripMenuItem";
+            resources.ApplyResources(this.languageToolStripMenuItem, "languageToolStripMenuItem");
             // 
             // englishToolStripMenuItem
             // 
-            resources.ApplyResources(this.englishToolStripMenuItem, "englishToolStripMenuItem");
             this.englishToolStripMenuItem.Name = "englishToolStripMenuItem";
+            resources.ApplyResources(this.englishToolStripMenuItem, "englishToolStripMenuItem");
             this.englishToolStripMenuItem.Click += new System.EventHandler(this.englishToolStripMenuItem_Click);
             // 
             // polskiToolStripMenuItem
             // 
-            resources.ApplyResources(this.polskiToolStripMenuItem, "polskiToolStripMenuItem");
             this.polskiToolStripMenuItem.Name = "polskiToolStripMenuItem";
+            resources.ApplyResources(this.polskiToolStripMenuItem, "polskiToolStripMenuItem");
             this.polskiToolStripMenuItem.Click += new System.EventHandler(this.polskiToolStripMenuItem_Click);
             // 
             // RoomPlanner
